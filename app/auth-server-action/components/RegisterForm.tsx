@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { signUpWithEmailAndPassword } from "../actions";
 
 const FormSchema = z
 	.object({
@@ -42,17 +43,36 @@ export default function RegisterForm() {
 		},
 	});
 
-	function onSubmit(data: z.infer<typeof FormSchema>) {
-		toast({
-			title: "You submitted the following values:",
-			description: (
-				<pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-					<code className="text-white">
-						{JSON.stringify(data, null, 2)}
-					</code>
-				</pre>
-			),
-		});
+	async function onSubmit(data: z.infer<typeof FormSchema>) {
+		const result = await signUpWithEmailAndPassword(data)
+		const {error} = JSON.parse(result)
+
+		if(error?.message){
+			
+			toast({
+				variant: "destructive",
+				title: "You submitted the following values:",
+				description: (
+					<pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+						<code className="text-white">
+							{error.message}
+						</code>
+					</pre>
+				),
+			});
+		}else{
+			toast({
+				title: "You submitted the following values:",
+				description: (
+					<pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+						<code className="text-white">
+							successfully register
+						</code>
+					</pre>
+				),
+			});
+		}
+
 	}
 
 	return (
